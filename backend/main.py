@@ -65,6 +65,18 @@ async def correlation_middleware(request: Request, call_next):
     return response
 
 
+@app.get("/")
+def root() -> dict[str, object]:
+    return {
+        "status": "ok",
+        "service": "docutrust-api",
+        "version": "3.2.0",
+        "docs": "/docs",
+        "health": "/health",
+        "ready": "/ready"
+    }
+
+
 @app.get("/health")
 def health() -> dict[str, object]:
     return {"status": "ok", "service": "docutrust-api", "version": "3.2.0", "timestamp": int(time.time())}
