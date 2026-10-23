@@ -1,9 +1,10 @@
 import { betterAuth } from 'better-auth'
 import { pool } from '@/lib/db'
 
-const baseURL = process.env.BETTER_AUTH_URL ??
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` :
-    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.V0_RUNTIME_URL ?? 'http://localhost:3000')
+const baseURL = process.env.VERCEL
+  ? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` :
+     process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : process.env.BETTER_AUTH_URL)
+  : (process.env.BETTER_AUTH_URL ?? 'http://localhost:3000')
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
@@ -11,18 +12,14 @@ export const auth = betterAuth({
   baseURL,
   emailAndPassword: { enabled: true, autoSignIn: true, minPasswordLength: 8 },
   trustedOrigins: [
-    ...(process.env.NODE_ENV === 'development' ? [
-      'http://localhost:3000',
-      ...(process.env.V0_RUNTIME_URL ? [process.env.V0_RUNTIME_URL] : []),
-      ...(process.env.V0_DEV_APP_URL ? [process.env.V0_DEV_APP_URL] : []),
-      ...(process.env.V0_BUILD_URL ? [process.env.V0_BUILD_URL] : []),
-      ...(process.env.V0_SANDBOX_URL ? [process.env.V0_SANDBOX_URL] : []),
-    ] : []),
-    ...(process.env.NODE_ENV === 'production' ? [
-      ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
-      ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
-    ] : []),
+    'http://localhost:3000',
+    'https://*.vercel.app',
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
+    ...(process.env.BETTER_AUTH_URL ? [process.env.BETTER_AUTH_URL] : []),
   ],
   session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
-  ...(process.env.NODE_ENV === 'development' ? { advanced: { defaultCookieAttributes: { sameSite: 'none' as const, secure: true } } } : {}),
+  advanced: {
+    useSecureCookies: process.env.NODE_ENV === 'production',
+  },
 })
