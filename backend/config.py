@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     tavily_api_key: str | None = None
     ai_model: str = "openai/gpt-5.4-mini"
     groq_model: str = "openai/gpt-oss-120b"
-    gemini_model: str = "gemini-2.5-flash"
+    gemini_model: str = "gemini-1.5-flash"
     ai_timeout_seconds: float = 45.0
     max_query_chars: int = 4000
     public_demo_enabled: bool = False

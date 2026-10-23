@@ -2,7 +2,7 @@ import { createHash, createHmac } from 'node:crypto'
 import { headers } from 'next/headers'
 import { generateText } from 'ai'
 import { groq } from '@ai-sdk/groq'
-import { count, eq } from 'drizzle-orm'
+import { count, eq, or } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { documentChunks, documents, queryRuns, reviews, tenants } from '@/lib/db/schema'
@@ -69,29 +69,10 @@ export async function POST(request: Request) {
   const userId = session?.user?.id || 'dev-auditor'
   const tenantId = tenantUuid(userId)
 
-  const backendUrl = process.env.BACKEND_API_URL ?? 'http://127.0.0.1:8000'
   const body = await request.text()
-  const payload = Buffer.from(JSON.stringify({ sub: userId, tenant: tenantId, role: 'reviewer', iat: Math.floor(Date.now() / 1000), jti: crypto.randomUUID() })).toString('base64url')
-  const assertion = `${payload}.${createHmac('sha256', process.env.BETTER_AUTH_SECRET ?? '').update(payload).digest('base64url')}`
-
-  // Always attempt connecting to the Python FastAPI multi-agent backend first!
-  const response = await fetch(`${backendUrl}/api/query/stream`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Docutrust-Mode': 'private',
-      'X-Tenant-Id': tenantId,
-      'X-User-Id': userId,
-      'X-Internal-Assertion': assertion,
-    },
-    body,
-    cache: 'no-store',
-  }).catch(() => null)
-
-  if (!response || !response.ok) {
-    const input = JSON.parse(body) as { query?: string }
-    const question = input.query?.trim() || 'your question'
-    const lowered = question.toLowerCase()
+  const input = JSON.parse(body) as { query?: string }
+  const question = input.query?.trim() || 'your question'
+  const lowered = question.toLowerCase()
 
     // 12-Stage Direct Trust Fallback (synchronized with DocuTrust Architecture)
     const isAntarctica = lowered.includes('antarctica')
@@ -105,9 +86,23 @@ export async function POST(request: Request) {
     let sufficiency = 'SUPPORTED'
     const reviewReasons: string[] = []
 
+    const STOP_WORDS = new Set([
+      'what', 'which', 'when', 'where', 'does', 'this', 'that', 'with', 'from',
+      'have', 'about', 'tell', 'please', 'explain', 'describe', 'the', 'is', 'are',
+      'was', 'were', 'how', 'can', 'could', 'for', 'and', 'under', 'per', 'days',
+      'week', 'you', 'your', 'give', 'define', 'meaning', 'mean', 'in', 'on', 'at',
+      'to', 'of', 'a', 'an', 'some', 'any', 'all', 'into', 'out', 'up', 'down',
+      'many', 'much', 'they', 'them', 'their', 'there'
+    ])
+
     // Attempt tenant-scoped chunk retrieval from Neon DB if user uploaded documents
     let userChunks: Array<{ document_id: string; document_name: string; version: string; section: string; quote: string; score: number }> = []
     try {
+      const devAuditorTenantId = tenantUuid('dev-auditor')
+      const tenantCondition = isProduction
+        ? eq(documentChunks.tenantId, tenantId)
+        : or(eq(documentChunks.tenantId, tenantId), eq(documentChunks.tenantId, devAuditorTenantId))
+
       const dbChunks = await db
         .select({
           id: documentChunks.documentId,
@@ -118,34 +113,92 @@ export async function POST(request: Request) {
         })
         .from(documentChunks)
         .innerJoin(documents, eq(documents.id, documentChunks.documentId))
-        .where(eq(documentChunks.tenantId, tenantId))
-        .limit(200)
+        .where(tenantCondition)
+        .limit(300)
 
       if (dbChunks.length > 0 && !isAntarctica && !isConflictQuery && !isDiffQuery && !isSecurity) {
-        const queryTerms = question.toLowerCase().split(/\W+/).filter((t) => t.length > 2)
+        const rawTerms = question.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean)
+        const meaningfulTerms = rawTerms.filter((t) => t.length >= 2 && !STOP_WORDS.has(t))
+        const searchTerms = meaningfulTerms.length > 0 ? meaningfulTerms : rawTerms
+
         const scored = dbChunks
           .map((c) => {
-            const h = c.quote.toLowerCase()
-            const matches = queryTerms.filter((term) => h.includes(term)).length
-            const score = queryTerms.length ? matches / queryTerms.length : 0.5
+            const haystack = c.quote.toLowerCase()
+            let score = 0
+            let matchCount = 0
+            for (const term of searchTerms) {
+              const regex = new RegExp(`\\b${term}`, 'g')
+              const matches = (haystack.match(regex) || []).length
+              if (matches > 0) {
+                matchCount++
+                score += matches * (term.length >= 4 ? 4 : 2)
+              }
+            }
+            if (searchTerms.length > 1 && haystack.includes(searchTerms.join(' '))) {
+              score += 15
+            }
+            const coverage = matchCount / Math.max(searchTerms.length, 1)
+            const finalScore = Number((score * coverage).toFixed(3))
+
             return {
               document_id: c.title,
               document_name: c.title,
               version: c.version || 'v1',
               section: `Section ${c.section + 1}`,
               quote: c.quote,
-              score: Number(score.toFixed(3))
+              score: finalScore,
+              matchCount
             }
           })
-          .filter((c) => c.score > 0)
+          .filter((c) => c.matchCount > 0)
           .sort((a, b) => b.score - a.score)
           .slice(0, 5)
 
         if (scored.length > 0) {
           userChunks = scored
-          answer = `Based on tenant policy [${scored[0].document_name} | ${scored[0].section}]: "${scored[0].quote.slice(0, 300)}..."`
-          confidence = Math.min(0.92, 0.5 + scored[0].score * 0.4)
-          requiresReview = confidence < 0.70
+
+          // Synthesize high-quality answer using Groq
+          if (process.env.GROQ_API_KEY) {
+            try {
+              const evidenceContext = userChunks
+                .map((c, i) => `[Source ${i + 1}: ${c.document_name} | ${c.section}]\n${c.quote}`)
+                .join('\n\n')
+
+              const synthesis = await generateText({
+                model: groq(process.env.GROQ_MODEL || 'openai/gpt-oss-120b') as any,
+                system: `You are DocuTrust, an evidence-grounded policy and intelligence analysis platform.
+Answer the user's question clearly, thoroughly, and authoritatively using ONLY the provided evidence passages.
+Rules:
+1. Provide a direct, well-structured answer explaining the concept, rule, or requirement asked about.
+2. Ground all points in the evidence. Cite sources inline as [Document | Section].
+3. If the evidence contains definitions, mechanisms, examples, or steps, explain them thoroughly.
+4. If the provided evidence genuinely has no information about the question, clearly state that the uploaded documents do not establish an answer to this question.
+5. Do not invent facts not supported by the evidence.`,
+                prompt: `Question: ${question}\n\nEvidence Passages:\n${evidenceContext}`,
+                maxOutputTokens: 1200
+              })
+
+              const genText = synthesis.text.trim()
+              if (genText) {
+                answer = genText
+                const abstained = /does not establish|no evidence|insufficient evidence|cannot answer|not found in the provided/i.test(answer)
+                confidence = abstained ? 0.35 : Math.min(0.96, 0.78 + Math.min(0.18, userChunks[0].score / 15))
+                requiresReview = abstained || confidence < 0.70
+                if (abstained) {
+                  sufficiency = 'INSUFFICIENT_EVIDENCE'
+                  reviewReasons.push('Evidence did not sufficiently ground the answer to this question.')
+                }
+              }
+            } catch (llmErr) {
+              console.error('[Stream RAG] Groq generation notice:', llmErr)
+            }
+          }
+
+          if (!answer) {
+            answer = `Based on tenant policy [${scored[0].document_name} | ${scored[0].section}]: "${scored[0].quote.slice(0, 400)}..."`
+            confidence = Math.min(0.90, 0.5 + scored[0].score * 0.4)
+            requiresReview = confidence < 0.70
+          }
         }
       }
     } catch (dbErr) {
@@ -173,9 +226,11 @@ export async function POST(request: Request) {
         requiresReview = false
         confidence = 0.92
       } else {
-        answer = 'Under the Civilian Work-From-Home Policy [Section 4.2, v2], the standard remote work allowance for general personnel is up to three (3) days per calendar week, with two days on-site. An exception allows Technology Division personnel to work remotely up to four (4) days per week. Prior written authorization from the Department Director is required.'
-        requiresReview = false
-        confidence = 0.88
+        answer = 'The uploaded documents do not contain evidence establishing an answer to this question. Please verify your query keywords or upload additional reference documents.'
+        requiresReview = true
+        confidence = 0.30
+        sufficiency = 'INSUFFICIENT_EVIDENCE'
+        reviewReasons.push('No matching evidence chunks found in uploaded documents for this query.')
       }
     }
 
@@ -303,19 +358,35 @@ export async function POST(request: Request) {
       console.warn('[Direct Trust] DB persistence warning:', dbErr)
     }
 
-    return new Response(`${events.map((event) => `data: ${JSON.stringify(event)}`).join('\n\n')}\n\ndata: [DONE]\n\n`, {
-      status: 200,
-      headers: { 'Content-Type': 'text/event-stream; charset=utf-8', 'Cache-Control': 'no-cache, no-transform' }
-    })
-  }
+    const encoder = new TextEncoder()
+    async function* makeIterator() {
+      for (const event of events) {
+        yield encoder.encode(`data: ${JSON.stringify(event)}\n\n`)
+      }
+      yield encoder.encode('data: [DONE]\n\n')
+    }
 
-  return new Response(response.body, {
-    status: response.status,
-    headers: {
-      'Content-Type': response.headers.get('content-type') ?? 'text/event-stream; charset=utf-8',
-      'Cache-Control': 'no-cache, no-transform',
-      Connection: 'keep-alive',
-      'X-Accel-Buffering': 'no',
-    },
-  })
+    const iterator = makeIterator()
+    const stream = new ReadableStream({
+      async pull(controller) {
+        try {
+          const { value, done } = await iterator.next()
+          if (done) {
+            controller.close()
+          } else {
+            controller.enqueue(value)
+          }
+        } catch {
+          controller.close()
+        }
+      }
+    })
+
+    return new Response(stream, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache, no-transform',
+      }
+    })
 }
