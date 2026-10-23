@@ -1,5 +1,6 @@
-import { redirect } from 'next/navigation'
+import { DocuTrustDashboard } from '@/components/docutrust-dashboard'
 
 export default function SignUpPage() {
-  redirect('/')
+  return <DocuTrustDashboard />
 }
+
