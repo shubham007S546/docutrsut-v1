@@ -85,7 +85,11 @@ export async function POST(request: NextRequest) {
   }
   const userId = session?.user?.id || 'dev-auditor'
   const tenantId = tenantUuid(userId)
-  await db.insert(tenants).values({ id: tenantId, slug: `user-${userId}`, mode: 'private' }).onConflictDoNothing({ target: tenants.id })
+  try {
+    await db.insert(tenants).values({ id: tenantId, slug: `user-${userId}`, mode: 'private' }).onConflictDoNothing()
+  } catch {
+    // Tenant already exists
+  }
 
   const formData = await request.formData()
   const file = formData.get('file')
@@ -103,30 +107,35 @@ export async function POST(request: NextRequest) {
   try {
     const bytes = Buffer.from(await file.arrayBuffer())
     let text = ''
-  if (file.type === 'application/pdf') {
-    const { extractText } = await import('unpdf')
-    const extracted = await extractText(new Uint8Array(bytes), { mergePages: true })
-    text = extracted.text
-  } else if (file.type.startsWith('text/') || file.type === 'application/json') {
-    text = bytes.toString('utf8')
-  } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-    const extracted = await mammoth.extractRawText({ buffer: bytes })
-    text = extracted.value
-  } else if (file.type.startsWith('image/')) {
-    return NextResponse.json({ error: 'Image upload is recognized, but OCR is not enabled yet. Upload a searchable PDF or DOCX, or add an OCR provider before indexing images.' }, { status: 415 })
-  } else {
-    return NextResponse.json({ error: 'Unsupported file extraction type.' }, { status: 415 })
-  }
-  const normalized = cleanPolicyText(text)
-  if (normalized.length < 40) return NextResponse.json({ error: 'No readable text was extracted from this file.' }, { status: 422 })
-  const chunks = chunkPolicyText(normalized).map((content, index) => ({ id: randomUUID(), tenantId: resolvedTenantId, versionLabel: 'v1', chunkIndex: index, content })).filter((chunk) => chunk.content.length > 20)
-  const documentId = randomUUID()
-  const sha256 = createHash('sha256').update(bytes).digest('hex')
-  await db.insert(documents).values({ id: documentId, tenantId: resolvedTenantId, title: file.name, sourceType: 'upload', mimeType: file.type, status: 'ready', sha256 })
-  if (chunks.length) await db.insert(documentChunks).values(chunks.map((chunk) => ({ ...chunk, documentId })))
+    if (file.type === 'application/pdf') {
+      const { extractText } = await import('unpdf')
+      const extracted = await extractText(new Uint8Array(bytes), { mergePages: true })
+      text = extracted.text
+    } else if (file.type.startsWith('text/') || file.type === 'application/json') {
+      text = bytes.toString('utf8')
+    } else if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      const extracted = await mammoth.extractRawText({ buffer: bytes })
+      text = extracted.value
+    } else if (file.type.startsWith('image/')) {
+      return NextResponse.json({ error: 'Image upload is recognized, but OCR is not enabled yet. Upload a searchable PDF or DOCX, or add an OCR provider before indexing images.' }, { status: 415 })
+    } else {
+      return NextResponse.json({ error: 'Unsupported file extraction type.' }, { status: 415 })
+    }
+    const normalized = cleanPolicyText(text)
+    if (normalized.length < 40) return NextResponse.json({ error: 'No readable text was extracted from this file.' }, { status: 422 })
+    const chunks = chunkPolicyText(normalized).map((content, index) => ({ id: randomUUID(), tenantId: resolvedTenantId, versionLabel: 'v1', chunkIndex: index, content })).filter((chunk) => chunk.content.length > 20)
+    const documentId = randomUUID()
+    const sha256 = createHash('sha256').update(bytes).digest('hex')
+    await db.insert(documents).values({ id: documentId, tenantId: resolvedTenantId, title: file.name, sourceType: 'upload', mimeType: file.type || 'application/pdf', status: 'ready', sha256 })
+    if (chunks.length) {
+      for (let i = 0; i < chunks.length; i += 30) {
+        const batch = chunks.slice(i, i + 30).map((chunk) => ({ ...chunk, documentId }))
+        await db.insert(documentChunks).values(batch)
+      }
+    }
     return NextResponse.json({ id: documentId, title: file.name, status: 'ready', chunks: chunks.length, source: 'native-nextjs' }, { status: 201 })
   } catch (error) {
-    console.error('[v0] document upload failed', error)
+    console.error('[DocuTrust] document upload error:', error)
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Document indexing failed' }, { status: 500 })
   }
 }
