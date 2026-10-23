@@ -1,0 +1,29 @@
+# v0 sandbox internal files
+__v0_runtime_loader.js
+__v0_devtools.tsx
+__v0_jsx-dev-runtime.ts
+.snowflake/
+.v0-trash/
+.vercel/
+
+# Environment variables — NEVER commit real secrets
+.env
+.env*.local
+.env.production
+
+# Common ignores
+node_modules
+__pycache__/
+*.py[cod]
+*$py.class
+.next/
+.DS_Store
+*.tsbuildinfo
+
+# Python ML artifacts
+*.pkl
+*.faiss
+*.index
+*.pt
+*.pth
+/RAG_project/vectorstore/data/

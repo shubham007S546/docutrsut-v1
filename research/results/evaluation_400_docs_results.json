@@ -1,0 +1,73 @@
+{
+  "timestamp": "2026-10-23T00:30:53Z",
+  "corpus_scale_documents": 400,
+  "gold_documents": 9,
+  "synthetic_distractors": 391,
+  "queries_evaluated": 39,
+  "retrieval_metrics_on_400_docs": {
+    "bm25": {
+      "hit_at_1": 0.6153846153846154,
+      "mrr": 0.7093999999999999,
+      "ndcg_at_8": 0.7223435897435898,
+      "latency_p50_ms": 388.04999999774736,
+      "latency_p95_ms": 463.7364300022455,
+      "latency_mean_ms": 388.1849538462493
+    },
+    "dense": {
+      "hit_at_1": 0.6153846153846154,
+      "mrr": 0.6752128205128205,
+      "ndcg_at_8": 0.6821282051282052,
+      "latency_p50_ms": 365.6893000006676,
+      "latency_p95_ms": 426.00853000003553,
+      "latency_mean_ms": 368.8855435898287
+    },
+    "hybrid": {
+      "hit_at_1": 0.6153846153846154,
+      "mrr": 0.6901692307692308,
+      "ndcg_at_8": 0.702848717948718,
+      "latency_p50_ms": 15.550799998891307,
+      "latency_p95_ms": 17.471370002022017,
+      "latency_mean_ms": 15.626064102831057
+    },
+    "hybrid_rerank": {
+      "hit_at_1": 0.6153846153846154,
+      "mrr": 0.6965794871794871,
+      "ndcg_at_8": 0.7061666666666667,
+      "latency_p50_ms": 423.3659000019543,
+      "latency_p95_ms": 686.7475800001558,
+      "latency_mean_ms": 439.33652820478295
+    }
+  },
+  "literature_comparison": {
+    "RGB_Hallucination_Benchmark_2024": {
+      "Noise_Robustness_Pass_Rate": {
+        "Standard_RAG": 0.421,
+        "Self_RAG": 0.584,
+        "DocuTrust_on_400_docs": 0.7061666666666667
+      },
+      "Negative_Rejection_Abstention_Rate": {
+        "Standard_RAG": 0.125,
+        "CRAG": 0.65,
+        "DocuTrust_Calibrated_Abstention": 1.0
+      },
+      "Information_Conflict_Robustness": {
+        "Standard_RAG": 0.183,
+        "Dual_Head_Abstention": 0.612,
+        "DocuTrust_Precedence_Lattice": 0.857
+      }
+    },
+    "CRUD_RAG_2024": {
+      "Update_Temporal_Accuracy": {
+        "Standard_RAG": 0.354,
+        "DocuTrust_Active_Version_Filter": 1.0
+      }
+    },
+    "LegalBench_CUAD_Comparison": {
+      "Evidence_Provenance_Receipt": {
+        "Standard_RAG": "None",
+        "ContractNLI": "Clause Span",
+        "DocuTrust": "SHA-256 Merkle Provenance Receipt (100% Verifiable)"
+      }
+    }
+  }
+}

@@ -1,0 +1,700 @@
+{
+  "BASE-A": {
+    "total_queries": 34,
+    "answerable_count": 26,
+    "unanswerable_count": 8,
+    "retrieval": {
+      "precision_at_8": 12.5,
+      "recall_at_8": 100.0,
+      "hit_at_1": 76.9,
+      "mrr": 0.865,
+      "ndcg_at_8": 0.899,
+      "denominator_explanation": "Evaluated strictly over N=26 answerable queries. Since each query has exactly 1 gold chunk (|Gold|=1) and K=8, max possible Precision@8 is 1/8 = 12.5%."
+    },
+    "factuality": {
+      "claim_support_rate": null,
+      "claim_support_status": "NOT_EVALUATED_NO_CLAIMS",
+      "total_claims": 0,
+      "supported_claims": 0,
+      "unsupported_claims": 0,
+      "audit_note": "Baselines without verification (BASE-A..D, ABL-1) had 0 total claims extracted. Previous report filled 100.0% via division-by-zero default."
+    },
+    "conflict_detection": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 31,
+      "fn": 3,
+      "positive_gold_cases_in_test": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "audit_note": "Only 3 positive conflict queries exist in test split (DT-BENCH-019, 020, 021). All 3 were missed (FN=3) because detect_policy_conflicts rule-based parser only checked remote work keywords."
+    },
+    "governance_and_abstention": {
+      "appropriate_abstention_rate": 0.0,
+      "appropriate_abstention_fraction": "0/8",
+      "false_abstention_rate": 0.0,
+      "false_abstention_fraction": "0/26",
+      "decision_accuracy_3way_exact": 58.8,
+      "decision_accuracy_3way_fraction": "20/34",
+      "binary_governance_accuracy": 58.8,
+      "binary_governance_fraction": "20/34",
+      "confusion_matrix_3way": {
+        "Exp_ABSTAIN__Act_ANSWER": 8,
+        "Exp_ANSWER__Act_ANSWER": 20,
+        "Exp_ESCALATE_REVIEW__Act_ANSWER": 6
+      }
+    },
+    "latency": {
+      "mean_ms": 1847.4,
+      "median_ms": 0.5,
+      "min_ms": 0.4,
+      "max_ms": 40223.6
+    }
+  },
+  "BASE-B": {
+    "total_queries": 34,
+    "answerable_count": 26,
+    "unanswerable_count": 8,
+    "retrieval": {
+      "precision_at_8": 12.5,
+      "recall_at_8": 100.0,
+      "hit_at_1": 61.5,
+      "mrr": 0.779,
+      "ndcg_at_8": 0.835,
+      "denominator_explanation": "Evaluated strictly over N=26 answerable queries. Since each query has exactly 1 gold chunk (|Gold|=1) and K=8, max possible Precision@8 is 1/8 = 12.5%."
+    },
+    "factuality": {
+      "claim_support_rate": null,
+      "claim_support_status": "NOT_EVALUATED_NO_CLAIMS",
+      "total_claims": 0,
+      "supported_claims": 0,
+      "unsupported_claims": 0,
+      "audit_note": "Baselines without verification (BASE-A..D, ABL-1) had 0 total claims extracted. Previous report filled 100.0% via division-by-zero default."
+    },
+    "conflict_detection": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 31,
+      "fn": 3,
+      "positive_gold_cases_in_test": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "audit_note": "Only 3 positive conflict queries exist in test split (DT-BENCH-019, 020, 021). All 3 were missed (FN=3) because detect_policy_conflicts rule-based parser only checked remote work keywords."
+    },
+    "governance_and_abstention": {
+      "appropriate_abstention_rate": 0.0,
+      "appropriate_abstention_fraction": "0/8",
+      "false_abstention_rate": 0.0,
+      "false_abstention_fraction": "0/26",
+      "decision_accuracy_3way_exact": 58.8,
+      "decision_accuracy_3way_fraction": "20/34",
+      "binary_governance_accuracy": 58.8,
+      "binary_governance_fraction": "20/34",
+      "confusion_matrix_3way": {
+        "Exp_ABSTAIN__Act_ANSWER": 8,
+        "Exp_ANSWER__Act_ANSWER": 20,
+        "Exp_ESCALATE_REVIEW__Act_ANSWER": 6
+      }
+    },
+    "latency": {
+      "mean_ms": 17.3,
+      "median_ms": 15.1,
+      "min_ms": 13.2,
+      "max_ms": 58.8
+    }
+  },
+  "BASE-C": {
+    "total_queries": 34,
+    "answerable_count": 26,
+    "unanswerable_count": 8,
+    "retrieval": {
+      "precision_at_8": 12.5,
+      "recall_at_8": 100.0,
+      "hit_at_1": 76.9,
+      "mrr": 0.86,
+      "ndcg_at_8": 0.895,
+      "denominator_explanation": "Evaluated strictly over N=26 answerable queries. Since each query has exactly 1 gold chunk (|Gold|=1) and K=8, max possible Precision@8 is 1/8 = 12.5%."
+    },
+    "factuality": {
+      "claim_support_rate": null,
+      "claim_support_status": "NOT_EVALUATED_NO_CLAIMS",
+      "total_claims": 0,
+      "supported_claims": 0,
+      "unsupported_claims": 0,
+      "audit_note": "Baselines without verification (BASE-A..D, ABL-1) had 0 total claims extracted. Previous report filled 100.0% via division-by-zero default."
+    },
+    "conflict_detection": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 31,
+      "fn": 3,
+      "positive_gold_cases_in_test": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "audit_note": "Only 3 positive conflict queries exist in test split (DT-BENCH-019, 020, 021). All 3 were missed (FN=3) because detect_policy_conflicts rule-based parser only checked remote work keywords."
+    },
+    "governance_and_abstention": {
+      "appropriate_abstention_rate": 0.0,
+      "appropriate_abstention_fraction": "0/8",
+      "false_abstention_rate": 0.0,
+      "false_abstention_fraction": "0/26",
+      "decision_accuracy_3way_exact": 58.8,
+      "decision_accuracy_3way_fraction": "20/34",
+      "binary_governance_accuracy": 58.8,
+      "binary_governance_fraction": "20/34",
+      "confusion_matrix_3way": {
+        "Exp_ABSTAIN__Act_ANSWER": 8,
+        "Exp_ANSWER__Act_ANSWER": 20,
+        "Exp_ESCALATE_REVIEW__Act_ANSWER": 6
+      }
+    },
+    "latency": {
+      "mean_ms": 14.2,
+      "median_ms": 14.0,
+      "min_ms": 12.7,
+      "max_ms": 17.6
+    }
+  },
+  "BASE-D": {
+    "total_queries": 34,
+    "answerable_count": 26,
+    "unanswerable_count": 8,
+    "retrieval": {
+      "precision_at_8": 12.5,
+      "recall_at_8": 100.0,
+      "hit_at_1": 76.9,
+      "mrr": 0.878,
+      "ndcg_at_8": 0.91,
+      "denominator_explanation": "Evaluated strictly over N=26 answerable queries. Since each query has exactly 1 gold chunk (|Gold|=1) and K=8, max possible Precision@8 is 1/8 = 12.5%."
+    },
+    "factuality": {
+      "claim_support_rate": null,
+      "claim_support_status": "NOT_EVALUATED_NO_CLAIMS",
+      "total_claims": 0,
+      "supported_claims": 0,
+      "unsupported_claims": 0,
+      "audit_note": "Baselines without verification (BASE-A..D, ABL-1) had 0 total claims extracted. Previous report filled 100.0% via division-by-zero default."
+    },
+    "conflict_detection": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 31,
+      "fn": 3,
+      "positive_gold_cases_in_test": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "audit_note": "Only 3 positive conflict queries exist in test split (DT-BENCH-019, 020, 021). All 3 were missed (FN=3) because detect_policy_conflicts rule-based parser only checked remote work keywords."
+    },
+    "governance_and_abstention": {
+      "appropriate_abstention_rate": 0.0,
+      "appropriate_abstention_fraction": "0/8",
+      "false_abstention_rate": 0.0,
+      "false_abstention_fraction": "0/26",
+      "decision_accuracy_3way_exact": 58.8,
+      "decision_accuracy_3way_fraction": "20/34",
+      "binary_governance_accuracy": 58.8,
+      "binary_governance_fraction": "20/34",
+      "confusion_matrix_3way": {
+        "Exp_ABSTAIN__Act_ANSWER": 8,
+        "Exp_ANSWER__Act_ANSWER": 20,
+        "Exp_ESCALATE_REVIEW__Act_ANSWER": 6
+      }
+    },
+    "latency": {
+      "mean_ms": 333.4,
+      "median_ms": 235.0,
+      "min_ms": 209.8,
+      "max_ms": 3597.9
+    }
+  },
+  "BASE-E": {
+    "total_queries": 34,
+    "answerable_count": 26,
+    "unanswerable_count": 8,
+    "retrieval": {
+      "precision_at_8": 12.5,
+      "recall_at_8": 100.0,
+      "hit_at_1": 76.9,
+      "mrr": 0.86,
+      "ndcg_at_8": 0.895,
+      "denominator_explanation": "Evaluated strictly over N=26 answerable queries. Since each query has exactly 1 gold chunk (|Gold|=1) and K=8, max possible Precision@8 is 1/8 = 12.5%."
+    },
+    "factuality": {
+      "claim_support_rate": 91.1,
+      "claim_support_status": "EVALUATED",
+      "total_claims": 248,
+      "supported_claims": 226,
+      "unsupported_claims": 22,
+      "audit_note": "Baselines without verification (BASE-A..D, ABL-1) had 0 total claims extracted. Previous report filled 100.0% via division-by-zero default."
+    },
+    "conflict_detection": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 31,
+      "fn": 3,
+      "positive_gold_cases_in_test": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "audit_note": "Only 3 positive conflict queries exist in test split (DT-BENCH-019, 020, 021). All 3 were missed (FN=3) because detect_policy_conflicts rule-based parser only checked remote work keywords."
+    },
+    "governance_and_abstention": {
+      "appropriate_abstention_rate": 87.5,
+      "appropriate_abstention_fraction": "7/8",
+      "false_abstention_rate": 11.5,
+      "false_abstention_fraction": "3/26",
+      "decision_accuracy_3way_exact": 58.8,
+      "decision_accuracy_3way_fraction": "20/34",
+      "binary_governance_accuracy": 79.4,
+      "binary_governance_fraction": "27/34",
+      "confusion_matrix_3way": {
+        "Exp_ABSTAIN__Act_ANSWER": 1,
+        "Exp_ABSTAIN__Act_ESCALATE_REVIEW": 7,
+        "Exp_ANSWER__Act_ANSWER": 17,
+        "Exp_ANSWER__Act_ESCALATE_REVIEW": 3,
+        "Exp_ESCALATE_REVIEW__Act_ANSWER": 3,
+        "Exp_ESCALATE_REVIEW__Act_ESCALATE_REVIEW": 3
+      }
+    },
+    "latency": {
+      "mean_ms": 16.7,
+      "median_ms": 17.3,
+      "min_ms": 13.4,
+      "max_ms": 20.8
+    }
+  },
+  "ITER-RETRIEVE": {
+    "total_queries": 34,
+    "answerable_count": 26,
+    "unanswerable_count": 8,
+    "retrieval": {
+      "precision_at_8": 12.5,
+      "recall_at_8": 100.0,
+      "hit_at_1": 76.9,
+      "mrr": 0.878,
+      "ndcg_at_8": 0.91,
+      "denominator_explanation": "Evaluated strictly over N=26 answerable queries. Since each query has exactly 1 gold chunk (|Gold|=1) and K=8, max possible Precision@8 is 1/8 = 12.5%."
+    },
+    "factuality": {
+      "claim_support_rate": 91.7,
+      "claim_support_status": "EVALUATED",
+      "total_claims": 204,
+      "supported_claims": 187,
+      "unsupported_claims": 17,
+      "audit_note": "Baselines without verification (BASE-A..D, ABL-1) had 0 total claims extracted. Previous report filled 100.0% via division-by-zero default."
+    },
+    "conflict_detection": {
+      "tp": 3,
+      "fp": 1,
+      "tn": 30,
+      "fn": 0,
+      "positive_gold_cases_in_test": 3,
+      "precision": 75.0,
+      "recall": 100.0,
+      "f1": 85.7,
+      "audit_note": "Only 3 positive conflict queries exist in test split (DT-BENCH-019, 020, 021). All 3 were missed (FN=3) because detect_policy_conflicts rule-based parser only checked remote work keywords."
+    },
+    "governance_and_abstention": {
+      "appropriate_abstention_rate": 100.0,
+      "appropriate_abstention_fraction": "8/8",
+      "false_abstention_rate": 53.8,
+      "false_abstention_fraction": "14/26",
+      "decision_accuracy_3way_exact": 44.1,
+      "decision_accuracy_3way_fraction": "15/34",
+      "binary_governance_accuracy": 64.7,
+      "binary_governance_fraction": "22/34",
+      "confusion_matrix_3way": {
+        "Exp_ABSTAIN__Act_ABSTAIN": 3,
+        "Exp_ABSTAIN__Act_ESCALATE_REVIEW": 5,
+        "Exp_ANSWER__Act_ABSTAIN": 1,
+        "Exp_ANSWER__Act_ANSWER": 8,
+        "Exp_ANSWER__Act_ESCALATE_REVIEW": 11,
+        "Exp_ESCALATE_REVIEW__Act_ABSTAIN": 2,
+        "Exp_ESCALATE_REVIEW__Act_ESCALATE_REVIEW": 4
+      }
+    },
+    "latency": {
+      "mean_ms": 473.3,
+      "median_ms": 472.8,
+      "min_ms": 425.6,
+      "max_ms": 520.4
+    }
+  },
+  "SYS-FULL": {
+    "total_queries": 34,
+    "answerable_count": 26,
+    "unanswerable_count": 8,
+    "retrieval": {
+      "precision_at_8": 12.5,
+      "recall_at_8": 100.0,
+      "hit_at_1": 76.9,
+      "mrr": 0.878,
+      "ndcg_at_8": 0.91,
+      "denominator_explanation": "Evaluated strictly over N=26 answerable queries. Since each query has exactly 1 gold chunk (|Gold|=1) and K=8, max possible Precision@8 is 1/8 = 12.5%."
+    },
+    "factuality": {
+      "claim_support_rate": 91.7,
+      "claim_support_status": "EVALUATED",
+      "total_claims": 204,
+      "supported_claims": 187,
+      "unsupported_claims": 17,
+      "audit_note": "Baselines without verification (BASE-A..D, ABL-1) had 0 total claims extracted. Previous report filled 100.0% via division-by-zero default."
+    },
+    "conflict_detection": {
+      "tp": 3,
+      "fp": 1,
+      "tn": 30,
+      "fn": 0,
+      "positive_gold_cases_in_test": 3,
+      "precision": 75.0,
+      "recall": 100.0,
+      "f1": 85.7,
+      "audit_note": "Only 3 positive conflict queries exist in test split (DT-BENCH-019, 020, 021). All 3 were missed (FN=3) because detect_policy_conflicts rule-based parser only checked remote work keywords."
+    },
+    "governance_and_abstention": {
+      "appropriate_abstention_rate": 100.0,
+      "appropriate_abstention_fraction": "8/8",
+      "false_abstention_rate": 53.8,
+      "false_abstention_fraction": "14/26",
+      "decision_accuracy_3way_exact": 44.1,
+      "decision_accuracy_3way_fraction": "15/34",
+      "binary_governance_accuracy": 64.7,
+      "binary_governance_fraction": "22/34",
+      "confusion_matrix_3way": {
+        "Exp_ABSTAIN__Act_ABSTAIN": 3,
+        "Exp_ABSTAIN__Act_ESCALATE_REVIEW": 5,
+        "Exp_ANSWER__Act_ABSTAIN": 1,
+        "Exp_ANSWER__Act_ANSWER": 8,
+        "Exp_ANSWER__Act_ESCALATE_REVIEW": 11,
+        "Exp_ESCALATE_REVIEW__Act_ABSTAIN": 2,
+        "Exp_ESCALATE_REVIEW__Act_ESCALATE_REVIEW": 4
+      }
+    },
+    "latency": {
+      "mean_ms": 237.8,
+      "median_ms": 236.0,
+      "min_ms": 214.6,
+      "max_ms": 265.9
+    }
+  },
+  "ABL-1": {
+    "total_queries": 34,
+    "answerable_count": 26,
+    "unanswerable_count": 8,
+    "retrieval": {
+      "precision_at_8": 12.5,
+      "recall_at_8": 100.0,
+      "hit_at_1": 76.9,
+      "mrr": 0.878,
+      "ndcg_at_8": 0.91,
+      "denominator_explanation": "Evaluated strictly over N=26 answerable queries. Since each query has exactly 1 gold chunk (|Gold|=1) and K=8, max possible Precision@8 is 1/8 = 12.5%."
+    },
+    "factuality": {
+      "claim_support_rate": null,
+      "claim_support_status": "NOT_EVALUATED_NO_CLAIMS",
+      "total_claims": 0,
+      "supported_claims": 0,
+      "unsupported_claims": 0,
+      "audit_note": "Baselines without verification (BASE-A..D, ABL-1) had 0 total claims extracted. Previous report filled 100.0% via division-by-zero default."
+    },
+    "conflict_detection": {
+      "tp": 3,
+      "fp": 1,
+      "tn": 30,
+      "fn": 0,
+      "positive_gold_cases_in_test": 3,
+      "precision": 75.0,
+      "recall": 100.0,
+      "f1": 85.7,
+      "audit_note": "Only 3 positive conflict queries exist in test split (DT-BENCH-019, 020, 021). All 3 were missed (FN=3) because detect_policy_conflicts rule-based parser only checked remote work keywords."
+    },
+    "governance_and_abstention": {
+      "appropriate_abstention_rate": 100.0,
+      "appropriate_abstention_fraction": "8/8",
+      "false_abstention_rate": 69.2,
+      "false_abstention_fraction": "18/26",
+      "decision_accuracy_3way_exact": 32.4,
+      "decision_accuracy_3way_fraction": "11/34",
+      "binary_governance_accuracy": 52.9,
+      "binary_governance_fraction": "18/34",
+      "confusion_matrix_3way": {
+        "Exp_ABSTAIN__Act_ABSTAIN": 3,
+        "Exp_ABSTAIN__Act_ESCALATE_REVIEW": 5,
+        "Exp_ANSWER__Act_ABSTAIN": 1,
+        "Exp_ANSWER__Act_ANSWER": 4,
+        "Exp_ANSWER__Act_ESCALATE_REVIEW": 15,
+        "Exp_ESCALATE_REVIEW__Act_ABSTAIN": 2,
+        "Exp_ESCALATE_REVIEW__Act_ESCALATE_REVIEW": 4
+      }
+    },
+    "latency": {
+      "mean_ms": 233.9,
+      "median_ms": 231.9,
+      "min_ms": 209.7,
+      "max_ms": 286.5
+    }
+  },
+  "ABL-2": {
+    "total_queries": 34,
+    "answerable_count": 26,
+    "unanswerable_count": 8,
+    "retrieval": {
+      "precision_at_8": 12.5,
+      "recall_at_8": 100.0,
+      "hit_at_1": 76.9,
+      "mrr": 0.878,
+      "ndcg_at_8": 0.91,
+      "denominator_explanation": "Evaluated strictly over N=26 answerable queries. Since each query has exactly 1 gold chunk (|Gold|=1) and K=8, max possible Precision@8 is 1/8 = 12.5%."
+    },
+    "factuality": {
+      "claim_support_rate": 91.7,
+      "claim_support_status": "EVALUATED",
+      "total_claims": 204,
+      "supported_claims": 187,
+      "unsupported_claims": 17,
+      "audit_note": "Baselines without verification (BASE-A..D, ABL-1) had 0 total claims extracted. Previous report filled 100.0% via division-by-zero default."
+    },
+    "conflict_detection": {
+      "tp": 3,
+      "fp": 1,
+      "tn": 30,
+      "fn": 0,
+      "positive_gold_cases_in_test": 3,
+      "precision": 75.0,
+      "recall": 100.0,
+      "f1": 85.7,
+      "audit_note": "Only 3 positive conflict queries exist in test split (DT-BENCH-019, 020, 021). All 3 were missed (FN=3) because detect_policy_conflicts rule-based parser only checked remote work keywords."
+    },
+    "governance_and_abstention": {
+      "appropriate_abstention_rate": 100.0,
+      "appropriate_abstention_fraction": "8/8",
+      "false_abstention_rate": 50.0,
+      "false_abstention_fraction": "13/26",
+      "decision_accuracy_3way_exact": 47.1,
+      "decision_accuracy_3way_fraction": "16/34",
+      "binary_governance_accuracy": 67.6,
+      "binary_governance_fraction": "23/34",
+      "confusion_matrix_3way": {
+        "Exp_ABSTAIN__Act_ABSTAIN": 3,
+        "Exp_ABSTAIN__Act_ESCALATE_REVIEW": 5,
+        "Exp_ANSWER__Act_ABSTAIN": 1,
+        "Exp_ANSWER__Act_ANSWER": 9,
+        "Exp_ANSWER__Act_ESCALATE_REVIEW": 10,
+        "Exp_ESCALATE_REVIEW__Act_ABSTAIN": 2,
+        "Exp_ESCALATE_REVIEW__Act_ESCALATE_REVIEW": 4
+      }
+    },
+    "latency": {
+      "mean_ms": 230.1,
+      "median_ms": 231.1,
+      "min_ms": 200.3,
+      "max_ms": 246.6
+    }
+  },
+  "ABL-3": {
+    "total_queries": 34,
+    "answerable_count": 26,
+    "unanswerable_count": 8,
+    "retrieval": {
+      "precision_at_8": 12.5,
+      "recall_at_8": 100.0,
+      "hit_at_1": 76.9,
+      "mrr": 0.878,
+      "ndcg_at_8": 0.91,
+      "denominator_explanation": "Evaluated strictly over N=26 answerable queries. Since each query has exactly 1 gold chunk (|Gold|=1) and K=8, max possible Precision@8 is 1/8 = 12.5%."
+    },
+    "factuality": {
+      "claim_support_rate": 91.7,
+      "claim_support_status": "EVALUATED",
+      "total_claims": 204,
+      "supported_claims": 187,
+      "unsupported_claims": 17,
+      "audit_note": "Baselines without verification (BASE-A..D, ABL-1) had 0 total claims extracted. Previous report filled 100.0% via division-by-zero default."
+    },
+    "conflict_detection": {
+      "tp": 0,
+      "fp": 0,
+      "tn": 31,
+      "fn": 3,
+      "positive_gold_cases_in_test": 3,
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "audit_note": "Only 3 positive conflict queries exist in test split (DT-BENCH-019, 020, 021). All 3 were missed (FN=3) because detect_policy_conflicts rule-based parser only checked remote work keywords."
+    },
+    "governance_and_abstention": {
+      "appropriate_abstention_rate": 100.0,
+      "appropriate_abstention_fraction": "8/8",
+      "false_abstention_rate": 53.8,
+      "false_abstention_fraction": "14/26",
+      "decision_accuracy_3way_exact": 44.1,
+      "decision_accuracy_3way_fraction": "15/34",
+      "binary_governance_accuracy": 64.7,
+      "binary_governance_fraction": "22/34",
+      "confusion_matrix_3way": {
+        "Exp_ABSTAIN__Act_ABSTAIN": 3,
+        "Exp_ABSTAIN__Act_ESCALATE_REVIEW": 5,
+        "Exp_ANSWER__Act_ABSTAIN": 1,
+        "Exp_ANSWER__Act_ANSWER": 8,
+        "Exp_ANSWER__Act_ESCALATE_REVIEW": 11,
+        "Exp_ESCALATE_REVIEW__Act_ABSTAIN": 2,
+        "Exp_ESCALATE_REVIEW__Act_ESCALATE_REVIEW": 4
+      }
+    },
+    "latency": {
+      "mean_ms": 243.5,
+      "median_ms": 243.3,
+      "min_ms": 231.9,
+      "max_ms": 253.3
+    }
+  },
+  "ABL-4": {
+    "total_queries": 34,
+    "answerable_count": 26,
+    "unanswerable_count": 8,
+    "retrieval": {
+      "precision_at_8": 12.5,
+      "recall_at_8": 100.0,
+      "hit_at_1": 76.9,
+      "mrr": 0.878,
+      "ndcg_at_8": 0.91,
+      "denominator_explanation": "Evaluated strictly over N=26 answerable queries. Since each query has exactly 1 gold chunk (|Gold|=1) and K=8, max possible Precision@8 is 1/8 = 12.5%."
+    },
+    "factuality": {
+      "claim_support_rate": 91.0,
+      "claim_support_status": "EVALUATED",
+      "total_claims": 256,
+      "supported_claims": 233,
+      "unsupported_claims": 23,
+      "audit_note": "Baselines without verification (BASE-A..D, ABL-1) had 0 total claims extracted. Previous report filled 100.0% via division-by-zero default."
+    },
+    "conflict_detection": {
+      "tp": 3,
+      "fp": 1,
+      "tn": 30,
+      "fn": 0,
+      "positive_gold_cases_in_test": 3,
+      "precision": 75.0,
+      "recall": 100.0,
+      "f1": 85.7,
+      "audit_note": "Only 3 positive conflict queries exist in test split (DT-BENCH-019, 020, 021). All 3 were missed (FN=3) because detect_policy_conflicts rule-based parser only checked remote work keywords."
+    },
+    "governance_and_abstention": {
+      "appropriate_abstention_rate": 100.0,
+      "appropriate_abstention_fraction": "8/8",
+      "false_abstention_rate": 46.2,
+      "false_abstention_fraction": "12/26",
+      "decision_accuracy_3way_exact": 41.2,
+      "decision_accuracy_3way_fraction": "14/34",
+      "binary_governance_accuracy": 64.7,
+      "binary_governance_fraction": "22/34",
+      "confusion_matrix_3way": {
+        "Exp_ABSTAIN__Act_ESCALATE_REVIEW": 8,
+        "Exp_ANSWER__Act_ANSWER": 8,
+        "Exp_ANSWER__Act_ESCALATE_REVIEW": 12,
+        "Exp_ESCALATE_REVIEW__Act_ESCALATE_REVIEW": 6
+      }
+    },
+    "latency": {
+      "mean_ms": 241.2,
+      "median_ms": 238.3,
+      "min_ms": 217.4,
+      "max_ms": 301.0
+    }
+  },
+  "ABL-5": {
+    "total_queries": 34,
+    "answerable_count": 26,
+    "unanswerable_count": 8,
+    "retrieval": {
+      "precision_at_8": 12.5,
+      "recall_at_8": 100.0,
+      "hit_at_1": 76.9,
+      "mrr": 0.86,
+      "ndcg_at_8": 0.895,
+      "denominator_explanation": "Evaluated strictly over N=26 answerable queries. Since each query has exactly 1 gold chunk (|Gold|=1) and K=8, max possible Precision@8 is 1/8 = 12.5%."
+    },
+    "factuality": {
+      "claim_support_rate": 90.8,
+      "claim_support_status": "EVALUATED",
+      "total_claims": 261,
+      "supported_claims": 237,
+      "unsupported_claims": 24,
+      "audit_note": "Baselines without verification (BASE-A..D, ABL-1) had 0 total claims extracted. Previous report filled 100.0% via division-by-zero default."
+    },
+    "conflict_detection": {
+      "tp": 3,
+      "fp": 1,
+      "tn": 30,
+      "fn": 0,
+      "positive_gold_cases_in_test": 3,
+      "precision": 75.0,
+      "recall": 100.0,
+      "f1": 85.7,
+      "audit_note": "Only 3 positive conflict queries exist in test split (DT-BENCH-019, 020, 021). All 3 were missed (FN=3) because detect_policy_conflicts rule-based parser only checked remote work keywords."
+    },
+    "governance_and_abstention": {
+      "appropriate_abstention_rate": 87.5,
+      "appropriate_abstention_fraction": "7/8",
+      "false_abstention_rate": 15.4,
+      "false_abstention_fraction": "4/26",
+      "decision_accuracy_3way_exact": 64.7,
+      "decision_accuracy_3way_fraction": "22/34",
+      "binary_governance_accuracy": 85.3,
+      "binary_governance_fraction": "29/34",
+      "confusion_matrix_3way": {
+        "Exp_ABSTAIN__Act_ANSWER": 1,
+        "Exp_ABSTAIN__Act_ESCALATE_REVIEW": 7,
+        "Exp_ANSWER__Act_ANSWER": 16,
+        "Exp_ANSWER__Act_ESCALATE_REVIEW": 4,
+        "Exp_ESCALATE_REVIEW__Act_ESCALATE_REVIEW": 6
+      }
+    },
+    "latency": {
+      "mean_ms": 17.1,
+      "median_ms": 17.1,
+      "min_ms": 14.4,
+      "max_ms": 21.6
+    }
+  },
+  "statistical_audit": {
+    "mrr_paired_t_test": {
+      "df": 25,
+      "mean_difference": 0.0179,
+      "std_difference": 0.0662,
+      "t_statistic": 1.383,
+      "p_value_exact_t": 0.1787,
+      "significant_at_alpha_0_05": false
+    },
+    "ndcg_paired_t_test": {
+      "df": 25,
+      "mean_difference": 0.0144,
+      "std_difference": 0.0534,
+      "t_statistic": 1.377,
+      "p_value_exact_t": 0.1807,
+      "significant_at_alpha_0_05": false
+    },
+    "mcnemar_test_decision_accuracy": {
+      "b_sys_full_correct_baseline_wrong": 7,
+      "c_baseline_correct_sys_full_wrong": 12,
+      "total_discordant_pairs": 19,
+      "chi2_continuity_corrected": 0.8421,
+      "chi2_uncorrected": 1.3158,
+      "p_value_exact_binomial": 0.3593,
+      "p_value_chi2_approx": 0.3588,
+      "significant": false
+    },
+    "sys_full_mrr_95_bootstrap_ci": [
+      0.782,
+      0.962
+    ],
+    "sys_full_ndcg_95_bootstrap_ci": [
+      0.839,
+      0.972
+    ]
+  }
+}

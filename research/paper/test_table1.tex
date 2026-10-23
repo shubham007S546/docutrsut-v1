@@ -1,0 +1,30 @@
+\documentclass[journal]{IEEEtran}
+\usepackage{booktabs,graphicx,amsmath,amssymb}
+\newcommand{\cmark}{\checkmark}
+\newcommand{\xmark}{$\times$}
+\begin{document}
+\begin{table}[t]
+\centering
+\caption{Systematic capability comparison between published architectures and DocuTrust.}
+\label{tab:comparison}
+\renewcommand{\arraystretch}{1.15}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{System} & \textbf{Hybrid} & \textbf{Neural} & \textbf{Claim} & \textbf{Version} & \textbf{Conflict} & \textbf{Safe} \\
+ & \textbf{RRF} & \textbf{Rerank} & \textbf{Verif} & \textbf{Preced} & \textbf{Arbit} & \textbf{Abst} \\
+\midrule
+Standard RAG~\cite{lewis2020rag} & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark \\
+DPR~\cite{karpukhin2020dpr} & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark \\
+Self-RAG~\cite{asai2024selfrag} & \xmark & \xmark & $\sim$ & \xmark & \xmark & $\sim$ \\
+CRAG~\cite{yan2024crag} & \xmark & \xmark & \xmark & \xmark & \xmark & $\sim$ \\
+FActScore~\cite{min2023factscore} & \xmark & \xmark & \cmark & \xmark & \xmark & \xmark \\
+ConflictQA~\cite{chen2024conflictqa} & \xmark & \xmark & \xmark & \xmark & $\sim$ & \xmark \\
+\midrule
+\textbf{DocuTrust (Ours)} & \textbf{\cmark} & \textbf{\cmark} & \textbf{\cmark} & \textbf{\cmark} & \textbf{\cmark} & \textbf{\cmark} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+Hello world.
+\end{document}

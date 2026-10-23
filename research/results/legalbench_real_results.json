@@ -1,0 +1,42 @@
+{
+  "dataset_name": "Stanford LegalBench (NeurIPS 2023)",
+  "task": "contract_qa",
+  "real_documents_count": 80,
+  "queries_count": 80,
+  "results": {
+    "bm25": {
+      "hit_at_1": 0.175,
+      "mrr": 0.2669775,
+      "ndcg_at_8": 0.3061275,
+      "latency_p50_ms": 293.5956500004977,
+      "latency_p95_ms": 444.43066000021645,
+      "latency_mean_ms": 312.6888775000225
+    },
+    "dense": {
+      "hit_at_1": 0.175,
+      "mrr": 0.27938875,
+      "ndcg_at_8": 0.32459375,
+      "latency_p50_ms": 251.31399999918358,
+      "latency_p95_ms": 348.9381150022382,
+      "latency_mean_ms": 255.7986462498775
+    },
+    "hybrid": {
+      "hit_at_1": 0.1875,
+      "mrr": 0.28866,
+      "ndcg_at_8": 0.32315750000000004,
+      "latency_p50_ms": 11.907800000699353,
+      "latency_p95_ms": 16.287929999634795,
+      "latency_mean_ms": 12.460772499571249
+    },
+    "hybrid_rerank": {
+      "hit_at_1": 0.175,
+      "mrr": 0.27095125,
+      "ndcg_at_8": 0.3094,
+      "latency_p50_ms": 251.29965000087395,
+      "latency_p95_ms": 316.87015499792324,
+      "latency_mean_ms": 256.40324375008277
+    }
+  },
+  "calibrated_abstention_ood_rate": 1.0,
+  "timestamp": "2026-10-23T00:39:46Z"
+}
