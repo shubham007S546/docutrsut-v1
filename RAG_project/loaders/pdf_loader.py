@@ -23,10 +23,26 @@ import unicodedata
 from pathlib import Path
 from dataclasses import dataclass, field
 
-import fitz  # PyMuPDF
-import pdfplumber
-from PIL import Image
-from tqdm import tqdm
+try:
+    import fitz  # PyMuPDF
+except ImportError:
+    fitz = None
+
+try:
+    import pdfplumber
+except ImportError:
+    pdfplumber = None
+
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
+
+try:
+    from tqdm import tqdm
+except ImportError:
+    def tqdm(iterable, *args, **kwargs):  # type: ignore
+        return iterable
 
 try:
     import pytesseract

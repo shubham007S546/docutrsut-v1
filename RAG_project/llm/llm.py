@@ -2,8 +2,16 @@ import os
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-from dotenv import load_dotenv
-from openai import OpenAI
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    def load_dotenv(*args, **kwargs):  # type: ignore
+        pass
+
+try:
+    from openai import OpenAI
+except ImportError:
+    OpenAI = None  # type: ignore
 
 from config import (
     LLM_MODEL,

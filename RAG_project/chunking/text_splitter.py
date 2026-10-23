@@ -2,7 +2,29 @@ from typing import List
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+try:
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+except ImportError:
+    class RecursiveCharacterTextSplitter:  # type: ignore
+        def __init__(self, chunk_size=1000, chunk_overlap=200, separators=None):
+            self.chunk_size = chunk_size
+            self.chunk_overlap = chunk_overlap
+            self.separators = separators or ["\n\n", "\n", ". ", " ", ""]
+
+        def split_text(self, text: str) -> List[str]:
+            if not text:
+                return []
+            chunks: List[str] = []
+            start = 0
+            while start < len(text):
+                end = min(start + self.chunk_size, len(text))
+                chunk = text[start:end].strip()
+                if chunk:
+                    chunks.append(chunk)
+                if end == len(text):
+                    break
+                start = max(start + 1, end - self.chunk_overlap)
+            return chunks
 
 from loaders.pdf_loader import Document
 from config import CHUNK_SIZE, CHUNK_OVERLAP
