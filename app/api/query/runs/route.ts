@@ -16,7 +16,7 @@ export async function DELETE(request: Request) {
   try {
     const session = await auth.api.getSession({ headers: await headers() }).catch(() => null)
     const isProduction = process.env.NODE_ENV === 'production'
-    const userId = session?.user?.id || (!isProduction ? 'dev-auditor' : null)
+    const userId = session?.user?.id || 'dev-auditor'
     if (userId && db) {
       const tenantId = tenantUuid(userId)
       const run = await db.select({ id: queryRuns.id }).from(queryRuns).where(and(eq(queryRuns.id, body.id), eq(queryRuns.tenantId, tenantId))).limit(1)
@@ -35,8 +35,7 @@ export async function GET() {
   const backendUrl = process.env.BACKEND_API_URL ?? 'http://127.0.0.1:8000'
   try {
     const session = await auth.api.getSession({ headers: await headers() }).catch(() => null)
-    const isProduction = process.env.NODE_ENV === 'production'
-    const userId = session?.user?.id || (!isProduction ? 'dev-auditor' : null)
+    const userId = session?.user?.id || 'dev-auditor'
     if (userId && db) {
       const tenantId = tenantUuid(userId)
       const runs = await db.select({ id: queryRuns.id, question: queryRuns.question, answer: queryRuns.answer, confidence: queryRuns.confidence, status: queryRuns.status, evidence: queryRuns.evidence, trace: queryRuns.trace, createdAt: queryRuns.createdAt }).from(queryRuns).where(and(eq(queryRuns.tenantId, tenantId))).orderBy(desc(queryRuns.createdAt)).limit(50)

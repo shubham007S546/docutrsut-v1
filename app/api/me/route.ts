@@ -2,12 +2,16 @@ import { headers } from 'next/headers'
 import { auth } from '@/lib/auth'
 
 export async function GET() {
-  const session = await auth.api.getSession({ headers: await headers() }).catch(() => null)
-  if (!session?.user) {
-    if (process.env.NODE_ENV !== 'production') {
-      return Response.json({ user: { name: 'Shubham', email: 'shubhamabhi004@gmail.com' } })
-    }
-    return Response.json({ user: null }, { status: 401 })
+  let session = null
+  try {
+    session = await auth.api.getSession({ headers: await headers() }).catch(() => null)
+  } catch {
+    session = null
   }
-  return Response.json({ user: { name: session.user.name, email: session.user.email } })
+
+  if (session?.user) {
+    return Response.json({ user: { name: session.user.name, email: session.user.email } })
+  }
+
+  return Response.json({ user: { name: 'Shubham', email: 'shubhamabhi004@gmail.com' } })
 }

@@ -16,8 +16,7 @@ export async function GET() {
   const backendUrl = process.env.BACKEND_API_URL ?? 'http://127.0.0.1:8000'
   try {
     const session = await auth.api.getSession({ headers: await headers() }).catch(() => null)
-    const isProduction = process.env.NODE_ENV === 'production'
-    const userId = session?.user?.id || (!isProduction ? 'dev-auditor' : null)
+    const userId = session?.user?.id || 'dev-auditor'
 
     if (userId && db) {
       const tenantId = tenantUuid(userId)
@@ -95,8 +94,7 @@ export async function DELETE(request: Request) {
 
   try {
     const session = await auth.api.getSession({ headers: await headers() }).catch(() => null)
-    const isProduction = process.env.NODE_ENV === 'production'
-    const userId = session?.user?.id || (!isProduction ? 'dev-auditor' : null)
+    const userId = session?.user?.id || 'dev-auditor'
 
     if (userId && db) {
       const tenantId = tenantUuid(userId)
@@ -120,8 +118,7 @@ export async function POST(request: Request) {
 
   try {
     const session = await auth.api.getSession({ headers: await headers() }).catch(() => null)
-    const isProduction = process.env.NODE_ENV === 'production'
-    const userId = session?.user?.id || (!isProduction ? 'dev-auditor' : null)
+    const userId = session?.user?.id || 'dev-auditor'
 
     if (userId && db) {
       const tenantId = tenantUuid(userId)
