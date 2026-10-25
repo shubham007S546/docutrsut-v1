@@ -2,10 +2,17 @@ import { drizzle } from 'drizzle-orm/node-postgres'
 import { Pool } from 'pg'
 import * as schema from './schema'
 
-const isNeonOrProd = process.env.DATABASE_URL?.includes('neon.tech') || process.env.NODE_ENV === 'production'
+const connectionString =
+  process.env.DATABASE_URL ||
+  process.env.POSTGRES_URL ||
+  process.env.POSTGRES_URL_NON_POOLING
+
+const isNeonOrProd =
+  connectionString?.includes('neon.tech') ||
+  process.env.NODE_ENV === 'production'
 
 export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: connectionString || undefined,
   ssl: isNeonOrProd ? { rejectUnauthorized: false } : undefined,
   max: 10,
   idleTimeoutMillis: 30000,
@@ -13,4 +20,5 @@ export const pool = new Pool({
 })
 
 export const db = drizzle(pool, { schema })
+
 

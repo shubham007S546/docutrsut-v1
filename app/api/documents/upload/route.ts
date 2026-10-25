@@ -136,6 +136,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ id: documentId, title: file.name, status: 'ready', chunks: chunks.length, source: 'native-nextjs' }, { status: 201 })
   } catch (error) {
     console.error('[DocuTrust] document upload error:', error)
+    const backendUrl = process.env.BACKEND_API_URL
+    if (backendUrl) {
+      try {
+        const forwardForm = new FormData()
+        forwardForm.append('file', file)
+        const forwardRes = await fetch(`${backendUrl}/api/documents/upload`, {
+          method: 'POST',
+          headers: {
+            'X-Tenant-Id': resolvedTenantId,
+            'X-Docutrust-Mode': 'private',
+            'X-User-Id': userId,
+          },
+          body: forwardForm,
+        })
+        if (forwardRes.ok) {
+          const forwardData = await forwardRes.json()
+          return NextResponse.json(forwardData, { status: 201 })
+        }
+      } catch (fwdErr) {
+        console.error('[DocuTrust] Forwarding to backend failed:', fwdErr)
+      }
+    }
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Document indexing failed' }, { status: 500 })
   }
 }
