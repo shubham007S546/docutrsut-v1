@@ -2,7 +2,7 @@ import { createHash, createHmac } from 'node:crypto'
 import { headers } from 'next/headers'
 import { generateText } from 'ai'
 import { groq } from '@ai-sdk/groq'
-import { count, eq, or } from 'drizzle-orm'
+import { and, asc, count, desc, eq, ilike, or } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { documentChunks, documents, queryRuns, reviews, tenants } from '@/lib/db/schema'
@@ -86,6 +86,11 @@ export async function POST(request: Request) {
       'many', 'much', 'they', 'them', 'their', 'there'
     ])
 
+    // Extract meaningful search terms
+    const rawTerms = question.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean)
+    const meaningfulTerms = rawTerms.filter((t) => t.length >= 2 && !STOP_WORDS.has(t))
+    const searchTerms = meaningfulTerms.length > 0 ? meaningfulTerms : rawTerms
+
     // Attempt tenant-scoped chunk retrieval from Neon DB if user uploaded documents
     let userChunks: Array<{ document_id: string; document_name: string; version: string; section: string; quote: string; score: number }> = []
     try {
@@ -97,24 +102,53 @@ export async function POST(request: Request) {
         eq(documentChunks.tenantId, targetTenantId)
       )
 
-      const dbChunks = await db
-        .select({
-          id: documentChunks.documentId,
-          title: documents.title,
-          version: documentChunks.versionLabel,
-          section: documentChunks.chunkIndex,
-          quote: documentChunks.content
-        })
-        .from(documentChunks)
-        .innerJoin(documents, eq(documents.id, documentChunks.documentId))
-        .where(tenantCondition)
-        .limit(300)
+      // 1. First, search for keyword-matching chunks across the entire tenant using ILIKE
+      const termConditions = searchTerms.slice(0, 8).map((term) => ilike(documentChunks.content, `%${term}%`))
+      let dbChunks: any[] = []
+
+      if (termConditions.length > 0) {
+        dbChunks = await db
+          .select({
+            id: documentChunks.documentId,
+            title: documents.title,
+            version: documentChunks.versionLabel,
+            section: documentChunks.chunkIndex,
+            quote: documentChunks.content,
+            docCreatedAt: documents.createdAt
+          })
+          .from(documentChunks)
+          .innerJoin(documents, eq(documents.id, documentChunks.documentId))
+          .where(and(tenantCondition, or(...termConditions)))
+          .orderBy(desc(documents.createdAt))
+          .limit(100)
+      }
+
+      // 2. If term search found fewer than 6 chunks, also grab recent document chunks
+      if (dbChunks.length < 6) {
+        const recentChunks = await db
+          .select({
+            id: documentChunks.documentId,
+            title: documents.title,
+            version: documentChunks.versionLabel,
+            section: documentChunks.chunkIndex,
+            quote: documentChunks.content,
+            docCreatedAt: documents.createdAt
+          })
+          .from(documentChunks)
+          .innerJoin(documents, eq(documents.id, documentChunks.documentId))
+          .where(tenantCondition)
+          .orderBy(desc(documents.createdAt), asc(documentChunks.chunkIndex))
+          .limit(150)
+
+        const existingKeys = new Set(dbChunks.map((c) => `${c.id}_${c.section}`))
+        for (const c of recentChunks) {
+          if (!existingKeys.has(`${c.id}_${c.section}`)) {
+            dbChunks.push(c)
+          }
+        }
+      }
 
       if (dbChunks.length > 0 && !isAntarctica && !isConflictQuery && !isDiffQuery && !isSecurity) {
-        const rawTerms = question.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean)
-        const meaningfulTerms = rawTerms.filter((t) => t.length >= 2 && !STOP_WORDS.has(t))
-        const searchTerms = meaningfulTerms.length > 0 ? meaningfulTerms : rawTerms
-
         const scored = dbChunks
           .map((c) => {
             const haystack = c.quote.toLowerCase()
@@ -129,7 +163,7 @@ export async function POST(request: Request) {
               }
             }
             if (searchTerms.length > 1 && haystack.includes(searchTerms.join(' '))) {
-              score += 15
+              score += 20
             }
             const coverage = matchCount / Math.max(searchTerms.length, 1)
             const finalScore = Number((score * coverage).toFixed(3))
@@ -146,7 +180,7 @@ export async function POST(request: Request) {
           })
           .filter((c) => c.matchCount > 0)
           .sort((a, b) => b.score - a.score)
-          .slice(0, 5)
+          .slice(0, 6)
 
         if (scored.length > 0) {
           userChunks = scored
@@ -159,17 +193,16 @@ export async function POST(request: Request) {
                 .join('\n\n')
 
               const synthesis = await generateText({
-                model: groq(process.env.GROQ_MODEL || 'openai/gpt-oss-120b') as any,
+                model: groq(process.env.GROQ_MODEL || 'llama-3.3-70b-versatile') as any,
                 system: `You are DocuTrust, an evidence-grounded policy and intelligence analysis platform.
-Answer the user's question clearly, thoroughly, and authoritatively using ONLY the provided evidence passages.
+Answer the user's question clearly, authoritatively, and comprehensively using the provided evidence passages.
 Rules:
-1. Provide a direct, well-structured answer explaining the concept, rule, or requirement asked about.
+1. Provide a comprehensive, detailed, multi-paragraph answer explaining the concept, definitions, architecture, working mechanisms, equations, and rules thoroughly with clear headings and bullet points.
 2. Ground all points in the evidence. Cite sources inline as [Document | Section].
-3. If the evidence contains definitions, mechanisms, examples, or steps, explain them thoroughly.
-4. If the provided evidence genuinely has no information about the question, clearly state that the uploaded documents do not establish an answer to this question.
-5. Do not invent facts not supported by the evidence.`,
+3. Explain definitions, internal mechanisms, gates, cell states, limitations, and examples completely. Do not give a brief or superficial summary when technical detail is present in the evidence.
+4. Do not invent facts not supported by the evidence.`,
                 prompt: `Question: ${question}\n\nEvidence Passages:\n${evidenceContext}`,
-                maxOutputTokens: 1200
+                maxOutputTokens: 2500
               })
 
               const genText = synthesis.text.trim()
